@@ -1,0 +1,32 @@
+
+# config
+# /config
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.python-version
+
+# Environments
+.venv/
+env/
+venv/
+ENV/
+
+# Secrets
+.env
+*.env
+
+# Database
+*.sqlite3
+database_report.txt
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# System
+.DS_Store
+Thumbs.db
