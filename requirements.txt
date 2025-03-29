@@ -1,2 +1,6 @@
 psycopg2-binary
 rich
+pytest
+sqlalchemy
+pandas
+python-dotenv

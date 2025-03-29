@@ -1,6 +1,6 @@
 
-# config
-# /config
+config
+/config
 
 # Python
 __pycache__/

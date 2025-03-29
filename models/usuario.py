@@ -6,7 +6,7 @@ from datetime import datetime
 class Usuario:
     def __init__(self, db: DatabaseManager):
         self.db = db
-        self.table_name = "usuarios"
+        self.table_name = f"{db.current_schema}.usuarios"  # Use db's current schema
         self.required_fields = ["cpf", "nome_completo", "email", "senha", "tipo"]
         self.optional_fields = ["telefone"]
         self.valid_types = ["servidor", "juiz", "advogado", "parte"]
