@@ -60,7 +60,7 @@ class MenuSystem:
                 "email": Prompt.ask("Enter email").strip(),
                 "senha": Prompt.ask("Enter password", password=True).strip(),
                 "tipo": Prompt.ask(
-                    "User type (servidor/juiz/advogado/parte)",
+                    "Type:",
                     choices=["servidor", "juiz", "advogado", "parte"],
                     default="parte",
                 ),
@@ -178,9 +178,9 @@ class MenuSystem:
                     default=current.get("email", ""),
                 ),
                 "tipo": Prompt.ask(
-                    f"Type [{current.get('tipo', '')}]",
-                    choices=["admin", "user"],
-                    default=current.get("tipo", "user"),
+                    f"Type:[{current.get('tipo', '')}]",
+                    choices=["servidor", "juiz", "advogado", "parte"],
+                    default=current.get("tipo", "parte"),
                 ),
                 "telefone": Prompt.ask(
                     f"Phone [{current.get('telefone', '')}]",
@@ -218,7 +218,7 @@ class MenuSystem:
                 return
 
             # Show confirmation with details
-            console.print(f"\n[bold]Usuario to delete:[/]")
+            console.print("\n[bold]Usuario to delete:[/]")
             console.print(f"ID: {usuario.get('id', '')}")
             console.print(f"Name: {usuario.get('nome_completo', '')}")
             console.print(f"Email: {usuario.get('email', '')}")
@@ -388,7 +388,7 @@ class MenuSystem:
                 output_file += ".csv"
 
             # Show confirmation
-            console.print(f"\n[bold]Export Details:[/]")
+            console.print("\n[bold]Export Details:[/]")
             console.print(f"Table: {table_name}")
             console.print(f"Output File: {output_file}")
 
