@@ -3,7 +3,10 @@ from rich.prompt import Prompt, Confirm
 from rich.panel import Panel
 from database.core import DatabaseManager
 from models.usuario import Usuario
-from config import DB_CONFIG
+from pathlib import Path  # Add this with other imports
+
+from datetime import datetime  # Add with other imports
+
 from ui.console import display_table, display_panel, display_error
 
 console = Console()
@@ -277,28 +280,20 @@ class MenuSystem:
             display_error(f"Operation failed: {str(e)}")
         Prompt.ask("\nPress Enter to continue...")
 
-    def _connect_db(self) -> None:
-        """Handle database connection"""
+    def _connect_db(self):
+        """Handle database connection without config passing"""
         if self.db.connected:
             if not Confirm.ask("Already connected. Reconnect?"):
                 return
 
         try:
-            # Get connection details interactively
-            config = {
-                "host": Prompt.ask("Host", default=DB_CONFIG["host"]),
-                "database": Prompt.ask("Database", default=DB_CONFIG["database"]),
-                "user": Prompt.ask("Username", default=DB_CONFIG["user"]),
-                "password": Prompt.ask(
-                    "Password", password=True
-                ),  # Fixed password prompt
-                "port": Prompt.ask("Port", default=DB_CONFIG["port"]),
-            }
-
-            self.db.connect(config)
-            display_panel("✅ Successfully connected to database", "green")
+            # Just show connection attempt status
+            if self.db.connect():  # No config passed
+                display_panel("✅ Connected using default configuration", "green")
+            else:
+                display_error("Connection failed")
         except Exception as e:
-            display_error(f"Connection failed: {str(e)}")
+            display_error(f"Connection error: {str(e)}")
 
     def _list_tables(self) -> None:
         """List tables in current schema"""
@@ -365,14 +360,42 @@ class MenuSystem:
             display_error(f"Query failed: {str(e)}")
 
     def _export_table(self) -> None:
-        """Export table to CSV"""
+        """Export table to CSV with proper datetime handling"""
         self._require_connection()
-        table_name = Prompt.ask("Enter table name to export")
-        output_file = Prompt.ask("Enter output file path")
 
         try:
-            self.db.export_table(table_name, output_file)
-            display_panel(f"Successfully exported to {output_file}", "green")
+            table_name = Prompt.ask("Enter table name to export")
+
+            # Validate table exists
+            if table_name not in self.db.list_tables():
+                display_error(f"Table '{table_name}' doesn't exist")
+                return
+
+            # Create default export directory if it doesn't exist
+            export_dir = Path("exports")
+            export_dir.mkdir(exist_ok=True)
+
+            # Generate timestamped filename
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            default_file = export_dir / f"{table_name}_{timestamp}.csv"
+
+            output_file = Prompt.ask(
+                "Enter output file path", default=str(default_file)
+            )
+
+            # Ensure .csv extension
+            if not output_file.lower().endswith(".csv"):
+                output_file += ".csv"
+
+            # Show confirmation
+            console.print(f"\n[bold]Export Details:[/]")
+            console.print(f"Table: {table_name}")
+            console.print(f"Output File: {output_file}")
+
+            if Confirm.ask("\nProceed with export?", default=True):
+                self.db.export_table(table_name, output_file)
+                display_panel(f"✅ Successfully exported to {output_file}", "green")
+
         except Exception as e:
             display_error(f"Export failed: {str(e)}")
 
