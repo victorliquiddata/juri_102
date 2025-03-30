@@ -4,3 +4,5 @@ pytest
 sqlalchemy
 pandas
 python-dotenv
+pytest
+pytest-cov
